@@ -96,7 +96,7 @@ body {
   line-height: var(--lh-base);
   letter-spacing: 0;
 
-  color: black;
+  color: var(--clr-grey-500);
   background-color: hotpink;
 }
 
@@ -114,18 +114,65 @@ svg {
 MAIN:
 ********************************
 */
-h1 {
-  text-align: center;
-  font-size: var(--fs-xl);
-  color: var(--clr-purple-950);
+.wrapper {
+  max-width: 1110px;
+  margin: 28px auto 0;
+}
+.site-header {
+  height: 83px;
+  background-color: white;
+  border-bottom: solid 1px var(--clr-grey-100);
+}
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.wrapper {
+.nav__left {
+  display: flex;
+  gap: var(--space-56);
+}
+
+.nav__logo {
+}
+
+.nav__list {
+  display: flex;
+  gap: var(--space-32);
+  list-style: none;
+}
+
+.nav__item {
+}
+
+.nav__link {
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  color: var(--clr-grey-500);
+}
+
+.nav__right {
+  display: flex;
+  gap: var(--space-48);
+  align-items: center;
+}
+
+.nav__shopping-cart {
+  stroke: var(--clr-grey-500);
+  stroke-width: 0.1px;
+}
+
+.nav__user-profile {
+  width: 50px;
+}
+
+/* .wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-}
+} */
 /* 
 ********************************
 FOOTER:
@@ -135,7 +182,7 @@ FOOTER:
 /*UPDATE VALUES!*/
 .attribution {
   text-align: center;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-24);
 
   font-size: var(--fs-xs);
   color: var(--clr-attribution);
