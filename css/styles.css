@@ -282,6 +282,7 @@ Product Actions/Buttons:
 .product__actions {
   display: flex;
   gap: var(--space-16);
+  height: 56px;
 }
 
 .product__quantity {
@@ -289,14 +290,61 @@ Product Actions/Buttons:
 }
 
 .product__quantity-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+
+  padding: 0 12px;
+  background-color: var(--clr-grey-50);
+  color: var(--clr-orange-500);
+}
+
+.product__quantity-btn svg {
+  width: 12px;
+  height: auto;
+  flex-shrink: 0;
+
+  fill: currentColor;
+}
+
+.product__quantity-btn:hover {
+  color: var(--clr-orange-300);
 }
 
 .product__quantity-value {
+  padding: var(--space-16) 36px;
+  font-weight: var(--fw-bold);
+  background-color: var(--clr-grey-50);
+  color: var(--clr-grey-950);
 }
 
 .product__add-to-cart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-16);
+  width: 272px;
+
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+
+  color: var(--clr-grey-950);
+  background-color: var(--clr-orange-500);
+  border: none;
+  border-radius: var(--radius-md);
+
+  cursor: pointer;
 }
 
+.product__add-to-cart svg {
+  fill: currentColor;
+}
+
+.product__add-to-cart:hover {
+  background-color: var(--clr-orange-300);
+}
 /* 
 ********************************
 FOOTER:
@@ -357,4 +405,14 @@ UTILITY CLASSES:
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+.border-left {
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.border-right {
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
 }
