@@ -314,6 +314,7 @@ Product Actions/Buttons:
 }
 
 .product__quantity-value {
+  width: 82px;
   padding: var(--space-16) 36px;
   font-weight: var(--fw-bold);
   background-color: var(--clr-grey-50);
