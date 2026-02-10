@@ -49,6 +49,36 @@
           </div>
         </nav>
       </header>
+
+      <article class="cart">
+        <h3 class="cart__title">Cart</h3>
+        <div class="cart__items">
+          <div class="cart__empty">
+            <p class="cart__empty-text">Your cart is empty.</p>
+          </div>
+          <div class="cart__summary">
+            <ul class="cart__list">
+              <li class="cart__item">
+                <img width="75" src="assets/images/image-product-1.jpg" alt="" class="cart__item-image" />
+                <p class="cart__item-text">ITEM</p>
+                <div class="cart__calculations">
+                  <p class="cart__calculation-text">PRICE x QUANTITY</p>
+                  <p class="cart__calculation-total">TOTAL</p>
+                </div>
+                <button class="cart__trash-btn" aria-label="Remove item from cart">
+                  <svg class="cart__trash-icon" width="14" height="16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#C3CAD9">
+                    <path
+                      d="M0 2.625V1.75C0 1.334.334 1 .75 1h3.5l.294-.584A.741.741 0 0 1 5.213 0h3.571a.75.75 0 0 1 .672.416L9.75 1h3.5c.416 0 .75.334.75.75v.875a.376.376 0 0 1-.375.375H.375A.376.376 0 0 1 0 2.625Zm13 1.75V14.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 14.5V4.375C1 4.169 1.169 4 1.375 4h11.25c.206 0 .375.169.375.375ZM4.5 6.5c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Zm3 0c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Zm3 0c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Z"
+                    />
+                  </svg>
+                </button>
+              </li>
+            </ul>
+            <button class="cart__checkout-btn">Checkout</button>
+          </div>
+        </div>
+      </article>
+
       <main class="main">
         <section class="product__gallery">
           <img src="assets/images/image-product-1.jpg" alt="" class="product__image" />
