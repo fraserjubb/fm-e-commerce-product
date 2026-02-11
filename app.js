@@ -3,6 +3,7 @@
 DOM SELECTORS:
 ********************************
 */
+const productTitle = document.querySelector('.product__title');
 const quantityBtn = Array.from(document.querySelectorAll('.product__quantity-btn'));
 
 const qtyValue = document.querySelector('.product__quantity-value');
@@ -10,6 +11,14 @@ const qtyValue = document.querySelector('.product__quantity-value');
 const cartBtn = document.querySelector('.product__add-to-cart');
 
 const currentPrice = document.querySelector('.product__price-current');
+
+const cartItemText = Array.from(document.querySelectorAll('.cart__item-text'));
+const cartCalcText = document.querySelector('.cart__calculation-text');
+const cartTotal = document.querySelector('.cart__calculation-total');
+
+const productImage = document.querySelector('.product__image');
+
+const productThumbnails = Array.from(document.querySelectorAll('.product__thumbnail'));
 /* 
 ********************************
 GLOBAL VARIABLES / GLOBAL OBJECTS:
@@ -38,7 +47,10 @@ function changeQty() {
 function calcCart() {
   currentQTY += total;
   checkoutPrice = priceNow * currentQTY;
-  console.log(checkoutPrice);
+
+  cartItemText[0].textContent = productTitle.textContent;
+  cartCalcText.textContent = `${currentPrice.textContent} x ${currentQTY}`;
+  cartTotal.textContent = `$${checkoutPrice}`;
   return checkoutPrice;
 }
 /* 
@@ -57,3 +69,10 @@ cartBtn.addEventListener('click', calcCart);
 INITIALIZATION:
 ********************************
 */
+productThumbnails.forEach(thumbnail => {
+  thumbnail.addEventListener('click', () => {
+    console.log(thumbnail.src);
+  });
+});
+// console.log(productImage.src);
+// console.log(productThumbnails[2]);
