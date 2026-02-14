@@ -8,7 +8,7 @@ const quantityBtn = Array.from(document.querySelectorAll('.product__quantity-btn
 
 const qtyValue = document.querySelector('.product__quantity-value');
 
-const cartBtn = document.querySelector('.product__add-to-cart');
+const cartBtn = Array.from(document.querySelectorAll('.product__add-to-cart'));
 
 const currentPrice = document.querySelector('.product__price-current');
 
@@ -25,60 +25,34 @@ const productThumbnails = Array.from(document.querySelectorAll('.product__thumbn
 GLOBAL VARIABLES / GLOBAL OBJECTS:
 ********************************
 */
-let total = Number(qtyValue.textContent);
-const priceNow = Number(currentPrice.textContent.slice(1));
+const products = [
+  {
+    id: 'sneakers-1',
+    name: 'Fall Limited Edition Sneakers',
+    price: 125,
+    image: 'assets/images/image-product-1.jpg',
+  },
+];
 
-let checkoutPrice;
-let currentQTY = 0;
+let quantityToAdd = Number(qtyValue.textContent);
+const currentPriceValue = Number(currentPrice.textContent.slice(1));
+
+let subtotal;
+let cartItemQuantity = 0;
 /* 
 ********************************
 FUNCTIONS:
 ********************************
 */
-function changeQty() {
-  if (this.dataset.action === 'decrement' && total >= 1) {
-    total--;
-  } else if (this.dataset.action === 'increment') {
-    total++;
-  }
-  qtyValue.textContent = total;
-  return total;
-}
-
-function calcCart() {
-  addElement();
-
-  // currentQTY += total;
-  // checkoutPrice = priceNow * currentQTY;
-
-  // cartItemText[0].textContent = productTitle.textContent;
-  // cartCalcText.textContent = `${currentPrice.textContent} x ${currentQTY}`;
-  // cartTotal.textContent = `$${checkoutPrice}`;
-  // return checkoutPrice;
-}
-/* 
-********************************
-EVENT LISTENERS:
-********************************
-*/
-quantityBtn.forEach(btn => {
-  btn.addEventListener('click', changeQty);
-});
-
-cartBtn.addEventListener('click', calcCart);
 
 /*
-********************************
-INITIALIZATION:
-********************************
+******
+ADD TO CART
+******
 */
-productThumbnails.forEach(thumbnail => {
-  thumbnail.addEventListener('click', () => {
-    console.log(thumbnail.src);
-  });
-});
-// console.log(productImage.src);
-// console.log(productThumbnails[2]);
+function findProductById(id) {
+  return products.find(product => product.id === id);
+}
 
 function createTrashIcon() {
   const svgNS = 'http://www.w3.org/2000/svg';
@@ -95,17 +69,24 @@ function createTrashIcon() {
   return svg;
 }
 
-function addElement() {
+function createNewCartItem(e) {
+  // console.log(e.currentTarget);
+
   // create a new list item element
   const newListItem = document.createElement('li');
   newListItem.classList.add('cart__list-item');
 
-  // create image element
+  // const targetProduct = e.currentTarget.dataset.productId;
+
+  // newListItem.dataset.productId = targetProduct;
+  // console.log(newListItem);
+
+  // ITEM IMAGE
   const cartItemImage = document.createElement('img');
   cartItemImage.src = 'assets/images/image-product-1.jpg';
   cartItemImage.classList.add('cart__item-image');
 
-  // create item text
+  // ITEM TEXT - div, name
   const textDiv = document.createElement('div');
   textDiv.classList.add('cart__item-text');
 
@@ -122,18 +103,81 @@ function addElement() {
   cartCalculationText.classList.add('cart__calculation-text');
 
   const cartCalculationSubtotal = document.createElement('p');
-  cartCalculationSubtotal.textContent = '$375.00';
+  // cartCalculationSubtotal.textContent = '$375.00';
+  cartCalculationSubtotal.textContent = getSubtotal();
   cartCalculationSubtotal.classList.add('cart__calculation-subtotal');
 
   calculationsDiv.append(cartCalculationText, cartCalculationSubtotal);
 
   textDiv.append(cartItemName, calculationsDiv);
 
+  // TRASH BTN
+  const trashButton = document.createElement('button');
+  trashButton.classList.add('cart__trash-btn');
   const svg = createTrashIcon();
-  newListItem.append(cartItemImage, textDiv, svg);
+
+  trashButton.append(svg);
+
+  // COMBINE INTO SINGLE ITEM
+  newListItem.append(cartItemImage, textDiv, trashButton);
 
   // add the newly created element and its content into the DOM
   cartList.appendChild(newListItem);
 }
 
-addElement();
+function handleAddToCart(e) {
+  const id = e.currentTarget.dataset.productId;
+  const product = findProductById(id);
+
+  createNewCartItem(product);
+  return product;
+}
+/*
+******
+UPDATE QUANTITY
+******
+*/
+function changeQty() {
+  if (this.dataset.action === 'decrement' && quantityToAdd >= 1) {
+    quantityToAdd--;
+  } else if (this.dataset.action === 'increment') {
+    quantityToAdd++;
+  }
+  qtyValue.textContent = quantityToAdd;
+  return quantityToAdd;
+}
+
+function getSubtotal() {
+  cartItemQuantity += quantityToAdd;
+  subtotal = `$${currentPriceValue * cartItemQuantity}`;
+
+  // console.log(cartItemText[0].textContent);
+  // cartItemText[0].textContent = productTitle.textContent;
+  // cartCalcText.textContent = `${currentPrice.textContent} x ${currentQTY}`;
+  // cartTotal.textContent = `$${subtotal}`;
+  return subtotal;
+}
+/* 
+********************************
+EVENT LISTENERS:
+********************************
+*/
+quantityBtn.forEach(btn => {
+  btn.addEventListener('click', changeQty);
+});
+
+cartBtn.forEach(btn => {
+  btn.addEventListener('click', e => handleAddToCart(e));
+});
+
+productThumbnails.forEach(thumbnail => {
+  thumbnail.addEventListener('click', () => {
+    console.log(thumbnail.src);
+  });
+});
+
+/*
+********************************
+INITIALIZATION:
+********************************
+*/
