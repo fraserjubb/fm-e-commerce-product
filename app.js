@@ -47,13 +47,39 @@ FUNCTIONS:
 
 /*
 ******
+UPDATE QUANTITY
+******
+*/
+function changeQty() {
+  if (this.dataset.action === 'decrement' && quantityToAdd >= 1) {
+    quantityToAdd--;
+  } else if (this.dataset.action === 'increment') {
+    quantityToAdd++;
+  }
+  qtyValue.textContent = quantityToAdd;
+  return quantityToAdd;
+}
+
+/*
+******
 ADD TO CART
 ******
 */
+// Find Product
 function findProductById(id) {
   return products.find(product => product.id === id);
 }
 
+// Calculate subtotal
+function getSubtotal() {
+  cartItemQuantity += Number(qtyValue.textContent);
+  console.log(cartItemQuantity);
+  subtotal = currentPriceValue * cartItemQuantity;
+  console.log(subtotal);
+  return subtotal;
+}
+
+// Create Trash Icon
 function createTrashIcon() {
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
@@ -69,21 +95,15 @@ function createTrashIcon() {
   return svg;
 }
 
-function createNewCartItem(e) {
-  // console.log(e.currentTarget);
-
+// Create New Cart Item
+function createNewCartItem(product) {
   // create a new list item element
   const newListItem = document.createElement('li');
   newListItem.classList.add('cart__list-item');
 
-  // const targetProduct = e.currentTarget.dataset.productId;
-
-  // newListItem.dataset.productId = targetProduct;
-  // console.log(newListItem);
-
   // ITEM IMAGE
   const cartItemImage = document.createElement('img');
-  cartItemImage.src = 'assets/images/image-product-1.jpg';
+  cartItemImage.src = product.image;
   cartItemImage.classList.add('cart__item-image');
 
   // ITEM TEXT - div, name
@@ -91,7 +111,7 @@ function createNewCartItem(e) {
   textDiv.classList.add('cart__item-text');
 
   const cartItemName = document.createElement('p');
-  cartItemName.textContent = 'Fall Limited Edition Sneakers';
+  cartItemName.textContent = product.name;
   cartItemName.classList.add('cart__item-name');
 
   // ITEM TEXT - calculations
@@ -99,7 +119,7 @@ function createNewCartItem(e) {
   calculationsDiv.classList.add('cart__calculations');
 
   const cartCalculationText = document.createElement('p');
-  cartCalculationText.textContent = '$125.00 x 3';
+  cartCalculationText.textContent = `$${product.price.toFixed(2)} x ${qtyValue.textContent}`;
   cartCalculationText.classList.add('cart__calculation-text');
 
   const cartCalculationSubtotal = document.createElement('p');
@@ -132,31 +152,7 @@ function handleAddToCart(e) {
   createNewCartItem(product);
   return product;
 }
-/*
-******
-UPDATE QUANTITY
-******
-*/
-function changeQty() {
-  if (this.dataset.action === 'decrement' && quantityToAdd >= 1) {
-    quantityToAdd--;
-  } else if (this.dataset.action === 'increment') {
-    quantityToAdd++;
-  }
-  qtyValue.textContent = quantityToAdd;
-  return quantityToAdd;
-}
 
-function getSubtotal() {
-  cartItemQuantity += quantityToAdd;
-  subtotal = `$${currentPriceValue * cartItemQuantity}`;
-
-  // console.log(cartItemText[0].textContent);
-  // cartItemText[0].textContent = productTitle.textContent;
-  // cartCalcText.textContent = `${currentPrice.textContent} x ${currentQTY}`;
-  // cartTotal.textContent = `$${subtotal}`;
-  return subtotal;
-}
 /* 
 ********************************
 EVENT LISTENERS:
