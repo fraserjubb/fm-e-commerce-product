@@ -72,6 +72,10 @@ function findProductById(id) {
   return products.find(product => product.id === id);
 }
 
+function selectCartItem(id) {
+  return cart.find(item => item.id === id);
+}
+
 // Calculate subtotal
 function getSubtotal() {
   cartItemQuantity += Number(qtyValue.textContent);
@@ -98,14 +102,10 @@ function createTrashIcon() {
 }
 
 // Create New Cart Item
-function createNewCartItem(product) {
-  // const getItemList = addItemToCartList();
-  // console.log(getItemList);
-  // if (product.id === item.dataset.productId) return;
-  // create a new list item element
+function createNewCartItem(product, selectedQty) {
   const newListItem = document.createElement('li');
   newListItem.classList.add('cart__list-item');
-  newListItem.dataset.productId = 'sneakers-1';
+  newListItem.dataset.productId = product.id;
 
   // ITEM IMAGE
   const cartItemImage = document.createElement('img');
@@ -125,11 +125,10 @@ function createNewCartItem(product) {
   calculationsDiv.classList.add('cart__calculations');
 
   const cartCalculationText = document.createElement('p');
-  cartCalculationText.textContent = `$${product.price.toFixed(2)} x ${qtyValue.textContent}`;
+  cartCalculationText.textContent = `$${product.price.toFixed(2)} x ${selectedQty}`;
   cartCalculationText.classList.add('cart__calculation-text');
 
   const cartCalculationSubtotal = document.createElement('p');
-  // cartCalculationSubtotal.textContent = '$375.00';
   cartCalculationSubtotal.textContent = getSubtotal();
   cartCalculationSubtotal.classList.add('cart__calculation-subtotal');
 
@@ -155,30 +154,42 @@ let cart = [];
 function handleAddToCart(e) {
   const id = e.currentTarget.dataset.productId;
   const product = findProductById(id);
+  const selectedQty = quantityToAdd;
+  const itemExists = Boolean(cart.find(item => item.id === id));
 
-  if (quantityToAdd === 0) {
+  if (selectedQty === 0) {
     return;
   }
-  // console.log(quantityToAdd);
 
-  if (cart.find(product => product.id === id)) {
-    itemExists = true;
+  if (itemExists && selectedQty > 0) {
+    const cartItem = selectCartItem(id);
+    updateExistingCartItemCalculations(cartItem, product.price);
+    console.log(cart);
+  } else if (itemExists) {
+    // itemExists = true;
     console.log(product);
     console.log(itemExists, 'Item already exists');
     return;
+  } else {
+    createNewCartItem(product, selectedQty);
+    cart.push({ id, selectedQty });
+    if (cart.length > 0) {
+      emptyCart.classList.toggle('hidden');
+    }
   }
-
-  createNewCartItem(product);
-  cart.push(product);
-  console.log(cart);
-
-  if (cart.length > 0) {
-    emptyCart.classList.toggle('hidden');
-  }
-
-  // return product;
 }
 
+function updateExistingCartItemCalculations(cartItem, currentPrice) {
+  const calculationText = document.querySelector('.cart__calculation-text');
+  const subtotalText = document.querySelector('.cart__calculation-subtotal');
+  const newValue = (cartItem.selectedQty += quantityToAdd);
+  const subtotal = currentPrice * newValue;
+
+  calculationText.textContent = `$${currentPrice.toFixed(2)} x ${newValue}`;
+
+  subtotalText.textContent = `$${subtotal.toFixed(2)}`;
+  console.log(cartItem);
+}
 /* 
 ********************************
 EVENT LISTENERS:
