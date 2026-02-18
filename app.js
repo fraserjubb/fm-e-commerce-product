@@ -12,6 +12,8 @@ const cartBtn = Array.from(document.querySelectorAll('.product__add-to-cart'));
 
 const currentPrice = document.querySelector('.product__price-current');
 
+const emptyCart = document.querySelector('.cart__empty-text');
+
 const cartList = document.querySelector('.cart__list');
 const cartItemText = Array.from(document.querySelectorAll('.cart__item-text'));
 const cartCalcText = document.querySelector('.cart__calculation-text');
@@ -73,9 +75,9 @@ function findProductById(id) {
 // Calculate subtotal
 function getSubtotal() {
   cartItemQuantity += Number(qtyValue.textContent);
-  console.log(cartItemQuantity);
+  // console.log(cartItemQuantity);
   subtotal = currentPriceValue * cartItemQuantity;
-  console.log(subtotal);
+  // console.log(subtotal);
   return subtotal;
 }
 
@@ -97,9 +99,13 @@ function createTrashIcon() {
 
 // Create New Cart Item
 function createNewCartItem(product) {
+  // const getItemList = addItemToCartList();
+  // console.log(getItemList);
+  // if (product.id === item.dataset.productId) return;
   // create a new list item element
   const newListItem = document.createElement('li');
   newListItem.classList.add('cart__list-item');
+  newListItem.dataset.productId = 'sneakers-1';
 
   // ITEM IMAGE
   const cartItemImage = document.createElement('img');
@@ -145,12 +151,32 @@ function createNewCartItem(product) {
   cartList.appendChild(newListItem);
 }
 
+let cart = [];
 function handleAddToCart(e) {
   const id = e.currentTarget.dataset.productId;
   const product = findProductById(id);
 
+  if (quantityToAdd === 0) {
+    return;
+  }
+  // console.log(quantityToAdd);
+
+  if (cart.find(product => product.id === id)) {
+    itemExists = true;
+    console.log(product);
+    console.log(itemExists, 'Item already exists');
+    return;
+  }
+
   createNewCartItem(product);
-  return product;
+  cart.push(product);
+  console.log(cart);
+
+  if (cart.length > 0) {
+    emptyCart.classList.toggle('hidden');
+  }
+
+  // return product;
 }
 
 /* 
