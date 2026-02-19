@@ -37,10 +37,10 @@ const products = [
 ];
 
 let quantityToAdd = Number(qtyValue.textContent);
-const currentPriceValue = Number(currentPrice.textContent.slice(1));
+// const currentPriceValue = Number(currentPrice.textContent.slice(1));
 
-let subtotal;
-let cartItemQuantity = 0;
+// let subtotal;
+// let cartItemQuantity = 0;
 /* 
 ********************************
 FUNCTIONS:
@@ -72,17 +72,41 @@ function findProductById(id) {
   return products.find(product => product.id === id);
 }
 
+// Select Cart Item
 function selectCartItem(id) {
   return cart.find(item => item.id === id);
 }
 
 // Calculate subtotal
-function getSubtotal() {
-  cartItemQuantity += Number(qtyValue.textContent);
-  // console.log(cartItemQuantity);
-  subtotal = currentPriceValue * cartItemQuantity;
-  // console.log(subtotal);
-  return subtotal;
+function getSubtotal(currentPrice, currentQty) {
+  return `$${currentPrice * currentQty}`;
+}
+
+function createCartItemText(product, selectedQty) {
+  const textDiv = document.createElement('div');
+  textDiv.classList.add('cart__item-text');
+
+  const cartItemName = document.createElement('p');
+  cartItemName.textContent = product.name;
+  cartItemName.classList.add('cart__item-name');
+
+  // ITEM TEXT - calculations
+  const calculationsDiv = document.createElement('div');
+  calculationsDiv.classList.add('cart__calculations');
+
+  const calculationText = document.createElement('p');
+  calculationText.textContent = `$${product.price.toFixed(2)} x ${selectedQty}`;
+  calculationText.classList.add('cart__calculation-text');
+
+  const cartCalculationSubtotal = document.createElement('p');
+  const subtotal = getSubtotal(product.price, selectedQty);
+  cartCalculationSubtotal.textContent = subtotal;
+  cartCalculationSubtotal.classList.add('cart__calculation-subtotal');
+
+  calculationsDiv.append(calculationText, cartCalculationSubtotal);
+
+  textDiv.append(cartItemName, calculationsDiv);
+  return textDiv;
 }
 
 // Create Trash Icon
@@ -101,53 +125,54 @@ function createTrashIcon() {
   return svg;
 }
 
-// Create New Cart Item
-function createNewCartItem(product, selectedQty) {
-  const newListItem = document.createElement('li');
-  newListItem.classList.add('cart__list-item');
-  newListItem.dataset.productId = product.id;
-
-  // ITEM IMAGE
-  const cartItemImage = document.createElement('img');
-  cartItemImage.src = product.image;
-  cartItemImage.classList.add('cart__item-image');
-
-  // ITEM TEXT - div, name
-  const textDiv = document.createElement('div');
-  textDiv.classList.add('cart__item-text');
-
-  const cartItemName = document.createElement('p');
-  cartItemName.textContent = product.name;
-  cartItemName.classList.add('cart__item-name');
-
-  // ITEM TEXT - calculations
-  const calculationsDiv = document.createElement('div');
-  calculationsDiv.classList.add('cart__calculations');
-
-  const cartCalculationText = document.createElement('p');
-  cartCalculationText.textContent = `$${product.price.toFixed(2)} x ${selectedQty}`;
-  cartCalculationText.classList.add('cart__calculation-text');
-
-  const cartCalculationSubtotal = document.createElement('p');
-  cartCalculationSubtotal.textContent = getSubtotal();
-  cartCalculationSubtotal.classList.add('cart__calculation-subtotal');
-
-  calculationsDiv.append(cartCalculationText, cartCalculationSubtotal);
-
-  textDiv.append(cartItemName, calculationsDiv);
-
-  // TRASH BTN
+function createTrashButton() {
   const trashButton = document.createElement('button');
   trashButton.classList.add('cart__trash-btn');
   const svg = createTrashIcon();
 
   trashButton.append(svg);
+  return trashButton;
+}
+
+function createCartItemImage(product) {
+  const itemImage = document.createElement('img');
+  itemImage.src = product.image;
+  itemImage.classList.add('cart__item-image');
+  return itemImage;
+}
+
+// Create New Cart Item
+function createNewCartItem(product, selectedQty) {
+  //  ITEM - element, ID
+  const newListItem = document.createElement('li');
+  newListItem.classList.add('cart__list-item');
+  newListItem.dataset.productId = product.id;
+
+  const itemImage = createCartItemImage(product);
+
+  const itemText = createCartItemText(product, selectedQty);
+  const trashButton = createTrashButton();
 
   // COMBINE INTO SINGLE ITEM
-  newListItem.append(cartItemImage, textDiv, trashButton);
+  newListItem.append(itemImage, itemText, trashButton);
 
   // add the newly created element and its content into the DOM
   cartList.appendChild(newListItem);
+}
+
+function updateExistingCartItemCalculations(cartItem, currentPrice, additionalQty) {
+  const listItem = document.querySelector(`[data-product-id="${cartItem.id}"]`);
+
+  const calculationText = listItem.querySelector('.cart__calculation-text');
+  const subtotalText = listItem.querySelector('.cart__calculation-subtotal');
+
+  cartItem.selectedQty += additionalQty;
+
+  const subtotal = getSubtotal(currentPrice, cartItem.selectedQty);
+
+  calculationText.textContent = `$${currentPrice.toFixed(2)} x ${cartItem.selectedQty}`;
+
+  subtotalText.textContent = subtotal;
 }
 
 let cart = [];
@@ -161,35 +186,16 @@ function handleAddToCart(e) {
     return;
   }
 
-  if (itemExists && selectedQty > 0) {
+  if (itemExists) {
     const cartItem = selectCartItem(id);
-    updateExistingCartItemCalculations(cartItem, product.price);
-    console.log(cart);
-  } else if (itemExists) {
-    // itemExists = true;
-    console.log(product);
-    console.log(itemExists, 'Item already exists');
-    return;
+    updateExistingCartItemCalculations(cartItem, product.price, selectedQty);
   } else {
     createNewCartItem(product, selectedQty);
     cart.push({ id, selectedQty });
-    if (cart.length > 0) {
-      emptyCart.classList.toggle('hidden');
-    }
+    emptyCart.classList.toggle('hidden', cart.length > 0);
   }
 }
 
-function updateExistingCartItemCalculations(cartItem, currentPrice) {
-  const calculationText = document.querySelector('.cart__calculation-text');
-  const subtotalText = document.querySelector('.cart__calculation-subtotal');
-  const newValue = (cartItem.selectedQty += quantityToAdd);
-  const subtotal = currentPrice * newValue;
-
-  calculationText.textContent = `$${currentPrice.toFixed(2)} x ${newValue}`;
-
-  subtotalText.textContent = `$${subtotal.toFixed(2)}`;
-  console.log(cartItem);
-}
 /* 
 ********************************
 EVENT LISTENERS:
