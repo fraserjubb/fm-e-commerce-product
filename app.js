@@ -27,6 +27,8 @@ const productThumbnails = Array.from(document.querySelectorAll('.product__thumbn
 GLOBAL VARIABLES / GLOBAL OBJECTS:
 ********************************
 */
+let cart = [];
+
 const products = [
   {
     id: 'sneakers-1',
@@ -37,10 +39,7 @@ const products = [
 ];
 
 let quantityToAdd = Number(qtyValue.textContent);
-// const currentPriceValue = Number(currentPrice.textContent.slice(1));
 
-// let subtotal;
-// let cartItemQuantity = 0;
 /* 
 ********************************
 FUNCTIONS:
@@ -175,7 +174,6 @@ function updateExistingCartItemCalculations(cartItem, currentPrice, additionalQt
   subtotalText.textContent = subtotal;
 }
 
-let cart = [];
 function handleAddToCart(e) {
   const id = e.currentTarget.dataset.productId;
   const product = findProductById(id);
@@ -196,6 +194,22 @@ function handleAddToCart(e) {
   }
 }
 
+function deleteCartItem(e) {
+  const deleteBtn = e.target.closest('.cart__trash-btn');
+
+  if (!deleteBtn) {
+    return;
+  }
+
+  const listItem = deleteBtn.closest('.cart__list-item');
+  const productId = listItem.dataset.productId;
+
+  cart = cart.filter(item => item.id !== productId);
+
+  listItem.remove();
+  emptyCart.classList.toggle('hidden', cart.length > 0);
+}
+
 /* 
 ********************************
 EVENT LISTENERS:
@@ -214,6 +228,8 @@ productThumbnails.forEach(thumbnail => {
     console.log(thumbnail.src);
   });
 });
+
+cartList.addEventListener('click', e => deleteCartItem(e));
 
 /*
 ********************************
