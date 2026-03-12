@@ -8,7 +8,11 @@ const quantityBtn = Array.from(document.querySelectorAll('.product__quantity-btn
 
 const qtyValue = document.querySelector('.product__quantity-value');
 
-const cartBtn = Array.from(document.querySelectorAll('.product__add-to-cart'));
+const viewCartBtn = document.querySelector('.nav__shopping-cart');
+
+const cartModal = document.querySelector('.cart');
+
+const addToCartBtn = Array.from(document.querySelectorAll('.product__add-to-cart'));
 
 const currentPrice = document.querySelector('.product__price-current');
 
@@ -219,7 +223,7 @@ quantityBtn.forEach(btn => {
   btn.addEventListener('click', changeQty);
 });
 
-cartBtn.forEach(btn => {
+addToCartBtn.forEach(btn => {
   btn.addEventListener('click', e => handleAddToCart(e));
 });
 
@@ -231,6 +235,28 @@ productThumbnails.forEach(thumbnail => {
 
 cartList.addEventListener('click', e => deleteCartItem(e));
 
+window.addEventListener('click', e => {
+  if (cartModal.classList.contains('hidden')) return;
+  const clickedCartButton = e.target.closest('.nav__shopping-cart');
+  const clickedInsideCartUI = e.target.closest('.cart');
+
+  if (clickedCartButton || clickedInsideCartUI) return;
+
+  cartModal.classList.add('hidden');
+});
+
+window.addEventListener('keydown', e => {
+  const keyName = e.key;
+
+  if (keyName === 'Escape') {
+    cartModal.classList.add('hidden');
+  }
+  console.log(keyName);
+});
+
+viewCartBtn.addEventListener('click', () => {
+  cartModal.classList.toggle('hidden');
+});
 /*
 ********************************
 INITIALIZATION:
