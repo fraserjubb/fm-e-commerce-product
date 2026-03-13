@@ -235,9 +235,11 @@ addToCartBtn.forEach(btn => {
   });
 });
 
-productThumbnails.forEach(thumbnail => {
+productThumbnails.forEach((thumbnail, index) => {
   thumbnail.addEventListener('click', () => {
-    console.log(thumbnail.src);
+    const selectedImage = index + 1;
+
+    productImage.src = `assets/images/image-product-${selectedImage}.jpg`;
   });
 });
 
@@ -270,3 +272,33 @@ viewCartBtn.addEventListener('click', () => {
 INITIALIZATION:
 ********************************
 */
+
+const galleryImages = document.querySelectorAll('.product__gallery');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxClose = document.getElementById('lightboxClose');
+
+galleryImages.forEach(img => {
+  img.addEventListener('click', () => {
+    lightboxImg.src = productImage.src;
+    lightbox.classList.add('active');
+  });
+});
+
+lightboxClose.addEventListener('click', () => {
+  lightbox.classList.remove('active');
+});
+
+/* Optional UX: click outside image to close */
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) {
+    lightbox.classList.remove('active');
+  }
+});
+
+/* Optional UX: ESC key close */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    lightbox.classList.remove('active');
+  }
+});
