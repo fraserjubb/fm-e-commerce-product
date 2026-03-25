@@ -25,7 +25,11 @@ const cartTotal = document.querySelector('.cart__calculation-total');
 
 const productImage = document.querySelector('.product__image');
 
-const productThumbnails = Array.from(document.querySelectorAll('.product__thumbnail'));
+const productThumbnails = [...document.querySelector('.product__thumbnails').children];
+
+const lightboxThumbnails = [...document.querySelector('.lightbox__thumbnails').children];
+
+// const productThumbnails = Array.from(document.querySelectorAll('.product__thumbnail'));
 /* 
 ********************************
 GLOBAL VARIABLES / GLOBAL OBJECTS:
@@ -44,6 +48,7 @@ const products = [
 
 let quantityToAdd = Number(qtyValue.textContent);
 
+let isLightboxActive = false;
 /* 
 ********************************
 FUNCTIONS:
@@ -237,9 +242,19 @@ addToCartBtn.forEach(btn => {
 
 productThumbnails.forEach((thumbnail, index) => {
   thumbnail.addEventListener('click', () => {
-    const selectedImage = index + 1;
+    if (isLightboxActive) return;
 
+    const selectedImage = index + 1;
     productImage.src = `assets/images/image-product-${selectedImage}.jpg`;
+  });
+});
+
+lightboxThumbnails.forEach((thumbnail, index) => {
+  thumbnail.addEventListener('click', () => {
+    if (!isLightboxActive) return;
+
+    const selectedImage = index + 1;
+    lightboxImg.src = `assets/images/image-product-${selectedImage}.jpg`;
   });
 });
 
@@ -273,26 +288,30 @@ INITIALIZATION:
 ********************************
 */
 
-const galleryImages = document.querySelectorAll('.product__gallery');
+// const galleryImages = document.querySelectorAll('.product__gallery');
 const lightbox = document.getElementById('lightbox');
 const lightboxImg = document.getElementById('lightboxImg');
 const lightboxClose = document.getElementById('lightboxClose');
 
-galleryImages.forEach(img => {
-  img.addEventListener('click', () => {
-    lightboxImg.src = productImage.src;
-    lightbox.classList.add('active');
-  });
+productImage.addEventListener('click', () => {
+  lightboxImg.src = productImage.src;
+  lightbox.classList.add('active');
+
+  isLightboxActive = true;
 });
 
 lightboxClose.addEventListener('click', () => {
   lightbox.classList.remove('active');
+
+  isLightboxActive = false;
 });
 
 /* Optional UX: click outside image to close */
 lightbox.addEventListener('click', e => {
   if (e.target === lightbox) {
     lightbox.classList.remove('active');
+
+    isLightboxActive = false;
   }
 });
 
@@ -300,5 +319,7 @@ lightbox.addEventListener('click', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     lightbox.classList.remove('active');
+
+    isLightboxActive = false;
   }
 });
