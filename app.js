@@ -224,6 +224,13 @@ function deleteCartItem(e) {
   emptyCart.classList.toggle('hidden', cart.length > 0);
 }
 
+let currentIndex = 0;
+const totalImages = lightboxThumbnails.length;
+
+function updateLightboxImage() {
+  lightboxImg.src = `assets/images/image-product-${currentIndex + 1}.jpg`;
+}
+
 /* 
 ********************************
 EVENT LISTENERS:
@@ -246,6 +253,9 @@ productThumbnails.forEach((thumbnail, index) => {
 
     const selectedImage = index + 1;
     productImage.src = `assets/images/image-product-${selectedImage}.jpg`;
+
+    currentIndex = index;
+    return currentIndex;
   });
 });
 
@@ -253,8 +263,10 @@ lightboxThumbnails.forEach((thumbnail, index) => {
   thumbnail.addEventListener('click', () => {
     if (!isLightboxActive) return;
 
-    const selectedImage = index + 1;
-    lightboxImg.src = `assets/images/image-product-${selectedImage}.jpg`;
+    currentIndex = index;
+    updateLightboxImage();
+    console.log(currentIndex);
+    return currentIndex;
   });
 });
 
@@ -270,7 +282,7 @@ window.addEventListener('click', e => {
   cartModal.classList.add('hidden');
 });
 
-window.addEventListener('keydown', e => {
+document.addEventListener('keydown', e => {
   const keyName = e.key;
 
   if (keyName === 'Escape') {
@@ -306,7 +318,7 @@ lightboxClose.addEventListener('click', () => {
   isLightboxActive = false;
 });
 
-/* Optional UX: click outside image to close */
+/* Click outside image to close */
 lightbox.addEventListener('click', e => {
   if (e.target === lightbox) {
     lightbox.classList.remove('active');
@@ -317,9 +329,36 @@ lightbox.addEventListener('click', e => {
 
 /* Optional UX: ESC key close */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
+  const keyName = e.key;
+
+  if (keyName === 'Escape') {
     lightbox.classList.remove('active');
 
     isLightboxActive = false;
   }
+
+  if (!isLightboxActive) return;
+
+  if (keyName === 'ArrowLeft') {
+    currentIndex = Math.max(0, currentIndex - 1);
+    updateLightboxImage();
+  }
+
+  if (keyName === 'ArrowRight') {
+    currentIndex = Math.min(3, currentIndex + 1);
+    updateLightboxImage();
+  }
+});
+
+const previousImg = document.getElementById('lightbox__button-previous');
+const nextImg = document.getElementById('lightbox__button-next');
+
+previousImg.addEventListener('click', () => {
+  currentIndex = Math.max(0, currentIndex - 1);
+  updateLightboxImage();
+});
+
+nextImg.addEventListener('click', () => {
+  currentIndex = Math.min(3, currentIndex + 1);
+  updateLightboxImage();
 });

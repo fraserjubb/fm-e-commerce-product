@@ -577,6 +577,7 @@ UTILITY CLASSES:
 .image-wrapper {
   display: inline-block;
   text-align: right;
+  position: relative;
 }
 
 .lightbox-close {
@@ -593,4 +594,27 @@ UTILITY CLASSES:
   justify-content: center;
 
   /* margin-top: 32px; */
+}
+
+.lightbox__button {
+  position: absolute;
+
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-circle);
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+#lightbox__button-previous {
+  top: calc(275px + 56px / 2);
+  left: calc(-56px / 2);
+}
+
+#lightbox__button-next {
+  top: calc(275px + 56px / 2);
+  right: calc(-56px / 2);
 }
