@@ -247,13 +247,28 @@ addToCartBtn.forEach(btn => {
   });
 });
 
+const setActiveThumbnail = index => {
+  let thumbnailPool;
+  if (!isLightboxActive) {
+    thumbnailPool = productThumbnails;
+  } else if (isLightboxActive) {
+    thumbnailPool = lightboxThumbnails;
+  }
+
+  thumbnailPool.forEach(thumbnail => thumbnail.classList.remove('product__thumbnail--active'));
+
+  thumbnailPool[index].classList.add('product__thumbnail--active');
+};
+
 productThumbnails.forEach((thumbnail, index) => {
   thumbnail.addEventListener('click', () => {
     if (isLightboxActive) return;
 
     const selectedImage = index + 1;
     productImage.src = `assets/images/image-product-${selectedImage}.jpg`;
-
+    // console.log(index);
+    setActiveThumbnail(index);
+    // thumbnail.classList.toggle('product__thumbnail--active');
     currentIndex = index;
     return currentIndex;
   });
@@ -265,6 +280,8 @@ lightboxThumbnails.forEach((thumbnail, index) => {
 
     currentIndex = index;
     updateLightboxImage();
+    setActiveThumbnail(index);
+
     console.log(currentIndex);
     return currentIndex;
   });
@@ -310,6 +327,8 @@ productImage.addEventListener('click', () => {
   lightbox.classList.add('active');
 
   isLightboxActive = true;
+
+  setActiveThumbnail(currentIndex);
 });
 
 lightboxClose.addEventListener('click', () => {
@@ -341,13 +360,14 @@ document.addEventListener('keydown', e => {
 
   if (keyName === 'ArrowLeft') {
     currentIndex = Math.max(0, currentIndex - 1);
-    updateLightboxImage();
   }
 
   if (keyName === 'ArrowRight') {
     currentIndex = Math.min(3, currentIndex + 1);
-    updateLightboxImage();
   }
+
+  updateLightboxImage();
+  setActiveThumbnail(currentIndex);
 });
 
 const previousImg = document.getElementById('lightbox__button-previous');

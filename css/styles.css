@@ -621,3 +621,43 @@ UTILITY CLASSES:
   top: calc(275px + 56px / 2);
   right: calc(-56px / 2);
 }
+
+.product__thumbnail {
+  position: relative;
+  /* display: inline-block; */
+  border: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.product__thumbnail:hover {
+  /* opacity: 0.5; */
+}
+
+.product__thumbnail:hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.product__thumbnail--active:hover {
+  opacity: 1;
+}
+
+.product__thumbnail img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.product__thumbnail--active {
+  border: 2px solid var(--clr-orange-500);
+}
+
+.product__thumbnail--active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.75);
+}
