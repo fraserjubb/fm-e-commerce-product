@@ -590,6 +590,10 @@ UTILITY CLASSES:
   user-select: none;
 }
 
+.lightbox-close:hover {
+  color: var(--clr-orange-500);
+}
+
 .product__thumbnails.lightbox__thumbnails {
   /* display: flex; */
   max-width: 550px;
@@ -610,6 +614,12 @@ UTILITY CLASSES:
   justify-content: center;
   align-items: center;
   background-color: white;
+  cursor: pointer;
+  stroke: var(--clr-grey-950);
+}
+
+.lightbox__button:hover {
+  stroke: var(--clr-orange-500);
 }
 
 #lightbox__button-previous {

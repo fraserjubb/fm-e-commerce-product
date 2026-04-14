@@ -376,9 +376,11 @@ const nextImg = document.getElementById('lightbox__button-next');
 previousImg.addEventListener('click', () => {
   currentIndex = Math.max(0, currentIndex - 1);
   updateLightboxImage();
+  setActiveThumbnail(currentIndex);
 });
 
 nextImg.addEventListener('click', () => {
   currentIndex = Math.min(3, currentIndex + 1);
   updateLightboxImage();
+  setActiveThumbnail(currentIndex);
 });
