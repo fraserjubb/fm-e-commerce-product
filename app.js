@@ -3,40 +3,56 @@
 DOM SELECTORS:
 ********************************
 */
+/*
+******
+Product
+******
+*/
 const productTitle = document.querySelector('.product__title');
+const currentPrice = document.querySelector('.product__price-current');
+const productImage = document.querySelector('.product__image');
+const productThumbnails = [...document.querySelector('.product__thumbnails').children];
+
+/*
+******
+Lightbox
+******
+*/
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxThumbnails = [...document.querySelector('.lightbox__thumbnails').children];
+const lightboxClose = document.getElementById('lightboxClose');
+const previousImg = document.getElementById('lightbox__button-previous');
+const nextImg = document.getElementById('lightbox__button-next');
+
+/*
+******
+Quantity & Actions
+******
+*/
 const quantityBtn = Array.from(document.querySelectorAll('.product__quantity-btn'));
-
 const qtyValue = document.querySelector('.product__quantity-value');
-
-const viewCartBtn = document.querySelector('.nav__shopping-cart');
-
-const cartModal = document.querySelector('.cart');
-
 const addToCartBtn = Array.from(document.querySelectorAll('.product__add-to-cart'));
 
-const currentPrice = document.querySelector('.product__price-current');
-
-const emptyCart = document.querySelector('.cart__empty-text');
-
+/*
+******
+Cart (Header UI)
+******
+*/
+const viewCartBtn = document.querySelector('.nav__shopping-cart');
+const cartModal = document.querySelector('.cart');
 const cartList = document.querySelector('.cart__list');
+const emptyCart = document.querySelector('.cart__empty-text');
+const cartCheckoutBtn = document.querySelector('.cart__checkout');
 const cartItemText = Array.from(document.querySelectorAll('.cart__item-text'));
 const cartCalcText = document.querySelector('.cart__calculation-text');
 const cartTotal = document.querySelector('.cart__calculation-total');
 
-const productImage = document.querySelector('.product__image');
-
-const productThumbnails = [...document.querySelector('.product__thumbnails').children];
-
-const lightboxThumbnails = [...document.querySelector('.lightbox__thumbnails').children];
-
-// const productThumbnails = Array.from(document.querySelectorAll('.product__thumbnail'));
 /* 
 ********************************
 GLOBAL VARIABLES / GLOBAL OBJECTS:
 ********************************
 */
-let cart = [];
-
 const products = [
   {
     id: 'sneakers-1',
@@ -46,35 +62,23 @@ const products = [
   },
 ];
 
-let quantityToAdd = Number(qtyValue.textContent);
+const totalImages = lightboxThumbnails.length;
 
+let cart = [];
+let quantityToAdd = Number(qtyValue.textContent);
+let currentIndex = 0;
 let isLightboxActive = false;
+
 /* 
 ********************************
 FUNCTIONS:
 ********************************
 */
-
-/*
-******
-UPDATE QUANTITY
-******
-*/
-function changeQty() {
-  if (this.dataset.action === 'decrement' && quantityToAdd >= 1) {
-    quantityToAdd--;
-  } else if (this.dataset.action === 'increment') {
-    quantityToAdd++;
-  }
-  qtyValue.textContent = quantityToAdd;
-  return quantityToAdd;
+// Calculate subtotal
+function getSubtotal(currentPrice, currentQty) {
+  return `$${currentPrice * currentQty}`;
 }
 
-/*
-******
-ADD TO CART
-******
-*/
 // Find Product
 function findProductById(id) {
   return products.find(product => product.id === id);
@@ -85,11 +89,11 @@ function selectCartItem(id) {
   return cart.find(item => item.id === id);
 }
 
-// Calculate subtotal
-function getSubtotal(currentPrice, currentQty) {
-  return `$${currentPrice * currentQty}`;
-}
-
+/*
+******
+CREATE FUNCTIONS
+******
+*/
 function createCartItemText(product, selectedQty) {
   const textDiv = document.createElement('div');
   textDiv.classList.add('cart__item-text');
@@ -117,6 +121,13 @@ function createCartItemText(product, selectedQty) {
   return textDiv;
 }
 
+function createCartItemImage(product) {
+  const itemImage = document.createElement('img');
+  itemImage.src = product.image;
+  itemImage.classList.add('cart__item-image');
+  return itemImage;
+}
+
 // Create Trash Icon
 function createTrashIcon() {
   const svgNS = 'http://www.w3.org/2000/svg';
@@ -142,14 +153,15 @@ function createTrashButton() {
   return trashButton;
 }
 
-function createCartItemImage(product) {
-  const itemImage = document.createElement('img');
-  itemImage.src = product.image;
-  itemImage.classList.add('cart__item-image');
-  return itemImage;
+/*
+******
+UI Updates / DOM Manipulation
+******
+*/
+function updateLightboxImage() {
+  lightboxImg.src = `assets/images/image-product-${currentIndex + 1}.jpg`;
 }
 
-// Create New Cart Item
 function createNewCartItem(product, selectedQty) {
   //  ITEM - element, ID
   const newListItem = document.createElement('li');
@@ -183,27 +195,36 @@ function updateExistingCartItemCalculations(cartItem, currentPrice, additionalQt
   subtotalText.textContent = subtotal;
 }
 
-function handleAddToCart(e) {
-  const id = e.currentTarget.dataset.productId;
-  const product = findProductById(id);
-  const selectedQty = quantityToAdd;
-  const itemExists = Boolean(cart.find(item => item.id === id));
+function handleCheckoutBtn() {
+  cart.length >= 1 ? cartCheckoutBtn.classList.remove('hidden') : cartCheckoutBtn.classList.add('hidden');
+}
 
-  if (selectedQty === 0) {
-    return;
+const setActiveThumbnail = index => {
+  let thumbnailPool;
+  if (!isLightboxActive) {
+    thumbnailPool = productThumbnails;
+  } else if (isLightboxActive) {
+    thumbnailPool = lightboxThumbnails;
   }
 
-  e.stopPropagation();
-  if (itemExists) {
-    const cartItem = selectCartItem(id);
-    updateExistingCartItemCalculations(cartItem, product.price, selectedQty);
-  } else {
-    createNewCartItem(product, selectedQty);
-    cart.push({ id, selectedQty });
-    emptyCart.classList.toggle('hidden', cart.length > 0);
-  }
+  thumbnailPool.forEach(thumbnail => thumbnail.classList.remove('product__thumbnail--active'));
 
-  cartModal.classList.remove('hidden');
+  thumbnailPool[index].classList.add('product__thumbnail--active');
+};
+
+/*
+******
+Core Logic / Handlers
+******
+*/
+function changeQty() {
+  if (this.dataset.action === 'decrement' && quantityToAdd >= 1) {
+    quantityToAdd--;
+  } else if (this.dataset.action === 'increment') {
+    quantityToAdd++;
+  }
+  qtyValue.textContent = quantityToAdd;
+  return quantityToAdd;
 }
 
 function deleteCartItem(e) {
@@ -222,19 +243,42 @@ function deleteCartItem(e) {
 
   listItem.remove();
   emptyCart.classList.toggle('hidden', cart.length > 0);
+  handleCheckoutBtn();
 }
 
-let currentIndex = 0;
-const totalImages = lightboxThumbnails.length;
+function handleAddToCart(e) {
+  const id = e.currentTarget.dataset.productId;
+  const product = findProductById(id);
+  const selectedQty = quantityToAdd;
+  const itemExists = Boolean(cart.find(item => item.id === id));
 
-function updateLightboxImage() {
-  lightboxImg.src = `assets/images/image-product-${currentIndex + 1}.jpg`;
+  if (selectedQty === 0) {
+    return;
+  }
+
+  e.stopPropagation();
+  if (itemExists) {
+    const cartItem = selectCartItem(id);
+    updateExistingCartItemCalculations(cartItem, product.price, selectedQty);
+  } else {
+    createNewCartItem(product, selectedQty);
+    cart.push({ id, selectedQty });
+    emptyCart.classList.toggle('hidden', cart.length > 0);
+    handleCheckoutBtn();
+  }
+
+  cartModal.classList.remove('hidden');
 }
 
 /* 
 ********************************
 EVENT LISTENERS:
 ********************************
+*/
+/*
+******
+Quantity + Cart Actions
+******
 */
 quantityBtn.forEach(btn => {
   btn.addEventListener('click', changeQty);
@@ -247,33 +291,45 @@ addToCartBtn.forEach(btn => {
   });
 });
 
-const setActiveThumbnail = index => {
-  let thumbnailPool;
-  if (!isLightboxActive) {
-    thumbnailPool = productThumbnails;
-  } else if (isLightboxActive) {
-    thumbnailPool = lightboxThumbnails;
-  }
+cartList.addEventListener('click', e => deleteCartItem(e));
 
-  thumbnailPool.forEach(thumbnail => thumbnail.classList.remove('product__thumbnail--active'));
+viewCartBtn.addEventListener('click', () => {
+  cartModal.classList.toggle('hidden');
+});
 
-  thumbnailPool[index].classList.add('product__thumbnail--active');
-};
-
+/*
+******
+Gallery (Main Product)
+******
+*/
 productThumbnails.forEach((thumbnail, index) => {
   thumbnail.addEventListener('click', () => {
     if (isLightboxActive) return;
 
     const selectedImage = index + 1;
     productImage.src = `assets/images/image-product-${selectedImage}.jpg`;
-    // console.log(index);
+
     setActiveThumbnail(index);
-    // thumbnail.classList.toggle('product__thumbnail--active');
+
     currentIndex = index;
     return currentIndex;
   });
 });
 
+productImage.addEventListener('click', () => {
+  lightboxImg.src = productImage.src;
+  lightbox.classList.add('active');
+
+  isLightboxActive = true;
+
+  setActiveThumbnail(currentIndex);
+});
+
+/*
+******
+Lightbox (Thumbnails + Controls)
+******
+*/
 lightboxThumbnails.forEach((thumbnail, index) => {
   thumbnail.addEventListener('click', () => {
     if (!isLightboxActive) return;
@@ -282,52 +338,19 @@ lightboxThumbnails.forEach((thumbnail, index) => {
     updateLightboxImage();
     setActiveThumbnail(index);
 
-    console.log(currentIndex);
     return currentIndex;
   });
 });
 
-cartList.addEventListener('click', e => deleteCartItem(e));
-
-window.addEventListener('click', e => {
-  if (cartModal.classList.contains('hidden')) return;
-  const clickedCartButton = e.target.closest('.nav__shopping-cart');
-  const clickedInsideCartUI = e.target.closest('.cart');
-
-  if (clickedCartButton || clickedInsideCartUI) return;
-
-  cartModal.classList.add('hidden');
+previousImg.addEventListener('click', () => {
+  currentIndex = Math.max(0, currentIndex - 1);
+  updateLightboxImage();
+  setActiveThumbnail(currentIndex);
 });
 
-document.addEventListener('keydown', e => {
-  const keyName = e.key;
-
-  if (keyName === 'Escape') {
-    cartModal.classList.add('hidden');
-  }
-  console.log(keyName);
-});
-
-viewCartBtn.addEventListener('click', () => {
-  cartModal.classList.toggle('hidden');
-});
-/*
-********************************
-INITIALIZATION:
-********************************
-*/
-
-// const galleryImages = document.querySelectorAll('.product__gallery');
-const lightbox = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightboxImg');
-const lightboxClose = document.getElementById('lightboxClose');
-
-productImage.addEventListener('click', () => {
-  lightboxImg.src = productImage.src;
-  lightbox.classList.add('active');
-
-  isLightboxActive = true;
-
+nextImg.addEventListener('click', () => {
+  currentIndex = Math.min(3, currentIndex + 1);
+  updateLightboxImage();
   setActiveThumbnail(currentIndex);
 });
 
@@ -346,13 +369,31 @@ lightbox.addEventListener('click', e => {
   }
 });
 
-/* Optional UX: ESC key close */
+/*
+******
+Global Listeners
+******
+*/
+window.addEventListener('click', e => {
+  if (cartModal.classList.contains('hidden')) return;
+  const clickedCartButton = e.target.closest('.nav__shopping-cart');
+  const clickedInsideCartUI = e.target.closest('.cart');
+
+  if (clickedCartButton || clickedInsideCartUI) return;
+
+  cartModal.classList.add('hidden');
+});
+
+// Lightbox Controls
 document.addEventListener('keydown', e => {
   const keyName = e.key;
 
   if (keyName === 'Escape') {
-    lightbox.classList.remove('active');
+    // Close cart
+    cartModal.classList.add('hidden');
 
+    // Close lightbox
+    lightbox.classList.remove('active');
     isLightboxActive = false;
   }
 
@@ -370,17 +411,8 @@ document.addEventListener('keydown', e => {
   setActiveThumbnail(currentIndex);
 });
 
-const previousImg = document.getElementById('lightbox__button-previous');
-const nextImg = document.getElementById('lightbox__button-next');
-
-previousImg.addEventListener('click', () => {
-  currentIndex = Math.max(0, currentIndex - 1);
-  updateLightboxImage();
-  setActiveThumbnail(currentIndex);
-});
-
-nextImg.addEventListener('click', () => {
-  currentIndex = Math.min(3, currentIndex + 1);
-  updateLightboxImage();
-  setActiveThumbnail(currentIndex);
-});
+/*
+********************************
+INITIALIZATION:
+********************************
+*/
